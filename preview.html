@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contact Cards Manager — Live Preview</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    />
+    <!-- React & Babel for immediate in-browser execution -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Inter", system-ui, sans-serif;
+      }
+      :root {
+        --ink: #1c2530;
+        --ink-soft: #2a3644;
+        --cream: #f8f4ea;
+        --cream-dim: #efe9da;
+        --brass: #c79a4b;
+        --brass-dark: #a67c33;
+        --teal: #4e7c74;
+        --text: #23282e;
+        --text-dim: #6b6558;
+        --danger: #b8543f;
+      }
+
+      .cc-app {
+        min-height: 100vh;
+        background: radial-gradient(1200px 500px at 50% -10%, #24313f 0%, var(--ink) 55%);
+        color: var(--cream);
+        font-family: "Inter", system-ui, sans-serif;
+        padding-bottom: 4rem;
+      }
+
+      .cc-header {
+        padding: 3.5rem 1.5rem 2.5rem;
+        text-align: center;
+        border-bottom: 1px solid rgba(199, 154, 75, 0.25);
+      }
+      .cc-header-inner {
+        max-width: 720px;
+        margin: 0 auto;
+      }
+
+      .cc-eyebrow {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.72rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--brass);
+        display: inline-block;
+        margin-bottom: 0.6rem;
+      }
+
+      .cc-header h1 {
+        font-family: "Fraunces", serif;
+        font-weight: 600;
+        font-size: clamp(2.2rem, 5vw, 3.2rem);
+        margin: 0;
+        letter-spacing: -0.01em;
+      }
+
+      .cc-sub {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.8rem;
+        color: rgba(248, 244, 234, 0.55);
+        margin: 0.6rem 0 0;
+      }
+
+      .cc-main {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem 0;
+      }
+
+      /* Form */
+      .cc-form {
+        background: var(--ink-soft);
+        border: 1px solid rgba(199, 154, 75, 0.2);
+        border-radius: 14px;
+        padding: 1.75rem;
+        margin-bottom: 2.5rem;
+      }
+      .cc-form-head {
+        margin-bottom: 1.1rem;
+      }
+      .cc-form-head h2 {
+        font-family: "Fraunces", serif;
+        font-weight: 600;
+        font-size: 1.5rem;
+        margin: 0.2rem 0 0;
+      }
+      .cc-field-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+      .cc-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+      .cc-field-wide {
+        margin-bottom: 1.1rem;
+      }
+      .cc-field span {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: rgba(248, 244, 234, 0.55);
+      }
+      .cc-field input,
+      .cc-field textarea {
+        background: rgba(248, 244, 234, 0.06);
+        border: 1px solid rgba(248, 244, 234, 0.18);
+        border-radius: 8px;
+        padding: 0.6rem 0.7rem;
+        color: var(--cream);
+        font-family: "Inter", sans-serif;
+        font-size: 0.92rem;
+        resize: vertical;
+        outline: none;
+        transition: border-color 0.15s ease, background 0.15s ease;
+      }
+      .cc-field input::placeholder,
+      .cc-field textarea::placeholder {
+        color: rgba(248, 244, 234, 0.32);
+      }
+      .cc-field input:focus,
+      .cc-field textarea:focus {
+        border-color: var(--brass);
+        background: rgba(248, 244, 234, 0.1);
+      }
+      .cc-error {
+        color: #e5a48f;
+        font-size: 0.85rem;
+        margin: -0.3rem 0 0.9rem;
+        font-family: "IBM Plex Mono", monospace;
+      }
+      .cc-submit {
+        background: var(--brass);
+        color: #2a1d08;
+        border: none;
+        border-radius: 8px;
+        padding: 0.65rem 1.4rem;
+        font-family: "Inter", sans-serif;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background 0.15s ease, transform 0.1s ease;
+      }
+      .cc-submit:hover {
+        background: var(--brass-dark);
+      }
+      .cc-submit:active {
+        transform: scale(0.98);
+      }
+      .cc-submit:focus-visible {
+        outline: 2px solid var(--cream);
+        outline-offset: 2px;
+      }
+
+      /* Search */
+      .cc-search-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .cc-search {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--ink-soft);
+        border: 1px solid rgba(199, 154, 75, 0.25);
+        border-radius: 999px;
+        padding: 0.55rem 1rem;
+      }
+      .cc-search-icon {
+        color: var(--brass);
+        font-size: 1rem;
+      }
+      .cc-search input {
+        flex: 1;
+        background: none;
+        border: none;
+        outline: none;
+        color: var(--cream);
+        font-family: "Inter", sans-serif;
+        font-size: 0.92rem;
+      }
+      .cc-search input::placeholder {
+        color: rgba(248, 244, 234, 0.35);
+      }
+      .cc-clear {
+        background: none;
+        border: none;
+        color: rgba(248, 244, 234, 0.5);
+        font-size: 1.1rem;
+        cursor: pointer;
+        line-height: 1;
+      }
+      .cc-clear:hover {
+        color: var(--cream);
+      }
+      .cc-count {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.75rem;
+        color: rgba(248, 244, 234, 0.45);
+        white-space: nowrap;
+      }
+
+      /* Grid & Cards */
+      .cc-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 1.3rem;
+      }
+
+      .cc-card {
+        position: relative;
+        background: var(--cream);
+        color: var(--text);
+        border-radius: 10px;
+        padding: 1.3rem 1.2rem 1.1rem;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28), 0 1px 0 rgba(255, 255, 255, 0.4) inset;
+        transform: rotate(var(--tilt, 0deg));
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .cc-card:nth-child(3n + 1) {
+        --tilt: -0.6deg;
+      }
+      .cc-card:nth-child(3n + 2) {
+        --tilt: 0.4deg;
+      }
+      .cc-card:nth-child(3n + 3) {
+        --tilt: -0.2deg;
+      }
+      .cc-card:hover {
+        transform: rotate(0deg) translateY(-4px);
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+      }
+
+      .cc-punch {
+        position: absolute;
+        top: 0.55rem;
+        left: 0.7rem;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--ink);
+        box-shadow: 22px 0 0 var(--ink);
+        opacity: 0.85;
+      }
+
+      .cc-remove {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.6rem;
+        background: none;
+        border: none;
+        color: rgba(35, 40, 46, 0.35);
+        font-size: 1.2rem;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0.1rem 0.35rem;
+        border-radius: 6px;
+        transition: color 0.15s ease, background 0.15s ease;
+      }
+      .cc-remove:hover {
+        color: var(--danger);
+        background: rgba(184, 84, 63, 0.1);
+      }
+
+      .cc-card-top {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin-top: 0.9rem;
+      }
+      .cc-avatar {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+      .cc-avatar-fallback {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Fraunces", serif;
+        font-weight: 600;
+        font-size: 1.05rem;
+      }
+      .cc-name-block h3 {
+        font-family: "Fraunces", serif;
+        font-weight: 600;
+        font-size: 1.15rem;
+        margin: 0;
+        line-height: 1.2;
+      }
+      .cc-role {
+        font-size: 0.8rem;
+        color: var(--text-dim);
+        margin: 0.15rem 0 0;
+      }
+
+      .cc-divider {
+        border-top: 1px dashed rgba(35, 40, 46, 0.2);
+        margin: 0.9rem 0 0.7rem;
+      }
+
+      .cc-meta {
+        margin: 0;
+      }
+      .cc-meta-row {
+        display: grid;
+        grid-template-columns: 2.6em 1fr;
+        gap: 0.5rem;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.78rem;
+        padding: 0.1rem 0;
+      }
+      .cc-meta-row dt {
+        color: var(--teal);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .cc-meta-row dd {
+        margin: 0;
+        word-break: break-word;
+      }
+      .cc-email {
+        color: var(--text);
+      }
+
+      .cc-bio {
+        margin: 0.8rem 0 0;
+        font-size: 0.85rem;
+        color: var(--text);
+        line-height: 1.45;
+      }
+
+      .cc-empty {
+        text-align: center;
+        padding: 3.5rem 1rem;
+        color: rgba(248, 244, 234, 0.55);
+      }
+      .cc-empty-card {
+        width: 60px;
+        height: 42px;
+        margin: 0 auto 1rem;
+        border: 1.5px dashed rgba(199, 154, 75, 0.5);
+        border-radius: 6px;
+      }
+      .cc-empty p {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.85rem;
+      }
+
+      @media (max-width: 640px) {
+        .cc-field-row {
+          grid-template-columns: 1fr;
+        }
+        .cc-grid {
+          grid-template-columns: 1fr;
+        }
+        .cc-search-row {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .cc-count {
+          text-align: right;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState } = React;
+
+      // Seed Contacts
+      const SEED = [
+        {
+          id: "seed-1",
+          name: "Habinay P",
+          title: "Web Developer",
+          company: "",
+          phone: "9363741656",
+          email: "abihabinay@gmail.com",
+          bio: "Builds clean, functional interfaces and enjoys turning ideas into working products.",
+          avatar: "",
+        },
+        {
+          id: "seed-2",
+          name: "Grace Hopper",
+          title: "Rear Admiral, Compiler Pioneer",
+          company: "US Navy",
+          phone: "(555) 019-4200",
+          email: "grace@compile.dev",
+          bio: "Turned 'the machine can't do that' into a to-do list.",
+          avatar: "",
+        },
+        {
+          id: "seed-3",
+          name: "Alan Turing",
+          title: "Mathematician",
+          company: "Bletchley Park",
+          phone: "(555) 041-1912",
+          email: "alan@enigma.io",
+          bio: "Asks whether machines can think, then builds one to find out.",
+          avatar: "",
+        },
+      ];
+
+      function initials(name) {
+        if (!name) return "?";
+        return name
+          .trim()
+          .split(/\s+/)
+          .slice(0, 2)
+          .map((w) => w[0]?.toUpperCase())
+          .join("");
+      }
+
+      function hueFromName(name) {
+        let h = 0;
+        for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 360;
+        return h;
+      }
+
+      // ContactCard Component
+      function ContactCard({ contact, onRemove }) {
+        const hue = hueFromName(contact.name);
+        return (
+          <article className="cc-card">
+            <div className="cc-punch" aria-hidden="true" />
+            <button
+              className="cc-remove"
+              onClick={() => onRemove(contact.id)}
+              aria-label={`Remove ${contact.name}`}
+              title="Remove card"
+            >
+              ×
+            </button>
+
+            <div className="cc-card-top">
+              {contact.avatar ? (
+                <img className="cc-avatar" src={contact.avatar} alt={contact.name} />
+              ) : (
+                <div
+                  className="cc-avatar cc-avatar-fallback"
+                  style={{
+                    background: `hsl(${hue} 45% 88%)`,
+                    color: `hsl(${hue} 40% 30%)`,
+                  }}
+                >
+                  {initials(contact.name)}
+                </div>
+              )}
+              <div className="cc-name-block">
+                <h3>{contact.name}</h3>
+                {(contact.title || contact.company) && (
+                  <p className="cc-role">
+                    {contact.title}
+                    {contact.title && contact.company ? " · " : ""}
+                    {contact.company}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="cc-divider" />
+
+            <dl className="cc-meta">
+              {contact.phone && (
+                <div className="cc-meta-row">
+                  <dt>tel</dt>
+                  <dd>{contact.phone}</dd>
+                </div>
+              )}
+              {contact.email && (
+                <div className="cc-meta-row">
+                  <dt>mail</dt>
+                  <dd className="cc-email">{contact.email}</dd>
+                </div>
+              )}
+            </dl>
+
+            {contact.bio && <p className="cc-bio">{contact.bio}</p>}
+          </article>
+        );
+      }
+
+      // ContactList Component
+      function ContactList({ contacts, onRemove }) {
+        if (contacts.length === 0) {
+          return (
+            <div className="cc-empty">
+              <div className="cc-empty-card" aria-hidden="true" />
+              <p>No cards match. File a new one, or clear the search.</p>
+            </div>
+          );
+        }
+        return (
+          <div className="cc-grid">
+            {contacts.map((c) => (
+              <ContactCard key={c.id} contact={c} onRemove={onRemove} />
+            ))}
+          </div>
+        );
+      }
+
+      // ContactForm Component
+      function ContactForm({ onAdd }) {
+        const empty = {
+          name: "",
+          title: "",
+          company: "",
+          phone: "",
+          email: "",
+          bio: "",
+          avatar: "",
+        };
+        const [draft, setDraft] = useState(empty);
+        const [error, setError] = useState("");
+
+        const update = (field) => (e) =>
+          setDraft((d) => ({ ...d, [field]: e.target.value }));
+
+        const handleSubmit = (e) => {
+          e.preventDefault();
+          if (!draft.name.trim()) {
+            setError("A name is required to file this card.");
+            return;
+          }
+          onAdd({ ...draft, id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}` });
+          setDraft(empty);
+          setError("");
+        };
+
+        return (
+          <form className="cc-form" onSubmit={handleSubmit}>
+            <div className="cc-form-head">
+              <span className="cc-eyebrow">New entry</span>
+              <h2>File a contact</h2>
+            </div>
+
+            <div className="cc-field-row">
+              <label className="cc-field">
+                <span>Full name*</span>
+                <input
+                  type="text"
+                  value={draft.name}
+                  onChange={update("name")}
+                  placeholder="Ada Lovelace"
+                />
+              </label>
+              <label className="cc-field">
+                <span>Job title</span>
+                <input
+                  type="text"
+                  value={draft.title}
+                  onChange={update("title")}
+                  placeholder="Analytical Engineer"
+                />
+              </label>
+            </div>
+
+            <div className="cc-field-row">
+              <label className="cc-field">
+                <span>Company</span>
+                <input
+                  type="text"
+                  value={draft.company}
+                  onChange={update("company")}
+                  placeholder="Analytical Engines Co."
+                />
+              </label>
+              <label className="cc-field">
+                <span>Phone</span>
+                <input
+                  type="tel"
+                  value={draft.phone}
+                  onChange={update("phone")}
+                  placeholder="(555) 010-2027"
+                />
+              </label>
+            </div>
+
+            <div className="cc-field-row">
+              <label className="cc-field">
+                <span>Email</span>
+                <input
+                  type="email"
+                  value={draft.email}
+                  onChange={update("email")}
+                  placeholder="ada@example.com"
+                />
+              </label>
+              <label className="cc-field">
+                <span>Avatar URL</span>
+                <input
+                  type="text"
+                  value={draft.avatar}
+                  onChange={update("avatar")}
+                  placeholder="optional — leave blank for initials"
+                />
+              </label>
+            </div>
+
+            <label className="cc-field cc-field-wide">
+              <span>Short bio</span>
+              <textarea
+                rows={2}
+                value={draft.bio}
+                onChange={update("bio")}
+                placeholder="What they do, in one line."
+              />
+            </label>
+
+            {error && <p className="cc-error">{error}</p>}
+
+            <button type="submit" className="cc-submit">
+              Add to drawer
+            </button>
+          </form>
+        );
+      }
+
+      // App Component
+      function App() {
+        const [contacts, setContacts] = useState(SEED);
+        const [query, setQuery] = useState("");
+
+        const addContact = (contact) => setContacts((cs) => [contact, ...cs]);
+        const removeContact = (id) =>
+          setContacts((cs) => cs.filter((c) => c.id !== id));
+
+        const q = query.trim().toLowerCase();
+        const filtered = q
+          ? contacts.filter(
+              (c) =>
+                c.name.toLowerCase().includes(q) ||
+                (c.company || "").toLowerCase().includes(q)
+            )
+          : contacts;
+
+        return (
+          <div className="cc-app">
+            <header className="cc-header">
+              <div className="cc-header-inner">
+                <span className="cc-eyebrow">Contact Directory</span>
+                <h1>The Drawer</h1>
+                <p className="cc-sub">
+                  {contacts.length} card{contacts.length !== 1 ? "s" : ""} filed
+                </p>
+              </div>
+            </header>
+
+            <main className="cc-main">
+              <ContactForm onAdd={addContact} />
+
+              <div className="cc-search-row">
+                <label className="cc-search">
+                  <span className="cc-search-icon" aria-hidden="true">
+                    ⌕
+                  </span>
+                  <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Search by name or company…"
+                    aria-label="Search contacts by name or company"
+                  />
+                  {query && (
+                    <button
+                      className="cc-clear"
+                      onClick={() => setQuery("")}
+                      aria-label="Clear search"
+                    >
+                      ×
+                    </button>
+                  )}
+                </label>
+                <span className="cc-count">
+                  {filtered.length} of {contacts.length}
+                </span>
+              </div>
+
+              <ContactList contacts={filtered} onRemove={removeContact} />
+            </main>
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<App />);
+    </script>
+  </body>
+</html>
